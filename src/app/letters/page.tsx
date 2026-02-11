@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { PageHeader, LoadingSpinner, EmptyState, Modal } from "@/components/ui/shared";
 import { toast } from "sonner";
-import { Mail, Lock, Unlock, X, Heart, Plus, Send } from "lucide-react";
+import { Mail, Lock, X, Heart, Plus, Send } from "lucide-react";
 
 interface Letter {
   id: string;
@@ -41,20 +41,20 @@ export default function LettersPage() {
         { 
           id: '1', 
           title: "Open when you miss me", 
-          content: "My dearest Trizah,
+          content: `My dearest Trizah,
 
 If you're reading this, it means I'm not right there by your side, but remember that I'm always with you in heart. Close your eyes and feel my hug. I'll be back soon to hold you for real.
 
 Always yours,
-Ben", 
+Ben`, 
           created_at: new Date().toISOString() 
         },
         { 
           id: '2', 
           title: "Open when you're stressed", 
-          content: "Take a deep breath, love. You are stronger than you know and more capable than you think. I believe in you, and I'm your biggest fan. Everything will be okay.
+          content: `Take a deep breath, love. You are stronger than you know and more capable than you think. I believe in you, and I'm your biggest fan. Everything will be okay.
 
-Love, Ben", 
+Love, Ben`, 
           created_at: new Date().toISOString() 
         }
       ]);
