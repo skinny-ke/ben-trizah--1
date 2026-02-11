@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 350 100% 98%;
+  --foreground: 350 20% 20%;
+  --card: 0 0% 100%;
+  --card-foreground: 350 20% 20%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 350 20% 20%;
+  --primary: 350 80% 65%;
+  --primary-foreground: 350 10% 100%;
+  --secondary: 350 30% 95%;
+  --secondary-foreground: 350 40% 40%;
+  --muted: 350 20% 96%;
+  --muted-foreground: 350 20% 50%;
+  --accent: 350 80% 65%;
+  --accent-foreground: 350 10% 100%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 350 20% 90%;
+  --input: 350 20% 90%;
+  --ring: 350 80% 65%;
+  --radius: 1rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+.romantic-gradient {
+  background: linear-gradient(135deg, #fff5f7 0%, #ffeef2 100%);
+}
+
+.glass-card {
+  @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-xl;
+}
+
+.text-romantic {
+  @apply text-pink-600;
+}
+
+.bg-romantic {
+  @apply bg-pink-500;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
