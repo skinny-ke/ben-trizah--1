@@ -1,4 +1,3 @@
-"use strict";
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,12 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { PageHeader, Card, LoadingSpinner, EmptyState } from "@/components/ui/shared";
 import { toast } from "sonner";
-import { Plus, Trash2, StickyNote, Send, X, Sparkles, Wand2 } from "lucide-react";
+import { Plus, Trash2, StickyNote, Send, X, Wand2 } from "lucide-react";
 
 interface Note {
   id: string;
   content: string;
   created_at: string;
+  user_id?: string | null;
 }
 
 const SUGGESTIONS = [
@@ -42,10 +42,17 @@ export default function NotesPage() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setNotes(data || []);
+      
+      const formattedData: Note[] = (data || []).map((n: any) => ({
+        id: n.id,
+        content: n.content || "",
+        created_at: n.created_at || new Date().toISOString(),
+        user_id: n.user_id
+      }));
+      
+      setNotes(formattedData);
     } catch (error: any) {
       toast.error("Connecting to vault...");
-      // Seed for fallback/demo
       setNotes([
         { id: '1', content: "Trizah, thank you for choosing us every day 💖", created_at: new Date().toISOString() },
         { id: '2', content: "You're the best thing that ever happened to me, Ben.", created_at: new Date().toISOString() }
@@ -68,7 +75,15 @@ export default function NotesPage() {
         .single();
 
       if (error) throw error;
-      setNotes([data, ...notes]);
+      
+      const formattedNote: Note = {
+        id: data.id,
+        content: data.content || "",
+        created_at: data.created_at || new Date().toISOString(),
+        user_id: data.user_id
+      };
+
+      setNotes([formattedNote, ...notes]);
       setNewNote("");
       setIsAdding(false);
       toast.success("Note added to our vault!");

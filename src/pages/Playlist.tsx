@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button, Card, Input, Modal } from '@/components/ui/shared';
-import { Music, Plus, ExternalLink, Trash2, PlayCircle } from 'lucide-react';
+import { Music, Plus, Trash2, PlayCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
@@ -9,6 +9,8 @@ interface Song {
   id: string;
   song_title: string;
   link: string;
+  created_at?: string;
+  user_id?: string | null;
 }
 
 const SAMPLE_SONGS = [
@@ -31,7 +33,16 @@ export default function Playlist() {
     try {
       const { data, error } = await supabase.from('playlist').select('*');
       if (error) throw error;
-      setSongs(data?.length ? data : SAMPLE_SONGS);
+      
+      const formattedData: Song[] = (data || []).map((s: any) => ({
+        id: s.id,
+        song_title: s.song_title || "Untitled",
+        link: s.link || "",
+        created_at: s.created_at,
+        user_id: s.user_id
+      }));
+
+      setSongs(formattedData.length ? formattedData : SAMPLE_SONGS);
     } catch (error) {
       setSongs(SAMPLE_SONGS);
     }
@@ -43,7 +54,14 @@ export default function Playlist() {
       const { data, error } = await supabase.from('playlist').insert([{ song_title: songTitle, link }]).select();
       if (error) throw error;
       if (data) {
-        setSongs([...songs, data[0]]);
+        const newSong: Song = {
+          id: data[0].id,
+          song_title: data[0].song_title || "Untitled",
+          link: data[0].link || "",
+          created_at: data[0].created_at,
+          user_id: data[0].user_id
+        };
+        setSongs([...songs, newSong]);
       }
       setIsModalOpen(false);
       setSongTitle(''); setLink('');
@@ -82,7 +100,7 @@ export default function Playlist() {
                 <div className="bg-rose-100 p-3 rounded-full text-rose-500"><PlayCircle size={24} /></div>
                 <div>
                   <h3 className="font-bold text-stone-800">{song.song_title}</h3>
-                  {song.link && <a href={song.link} target="_blank" className="text-xs text-rose-400 hover:underline flex items-center gap-1 mt-1">Open in Spotify</a>}
+                  {song.link && <a href={song.link || undefined} target="_blank" rel="noopener noreferrer" className="text-xs text-rose-400 hover:underline flex items-center gap-1 mt-1">Open in Spotify</a>}
                 </div>
               </div>
               <button onClick={() => deleteSong(song.id)} className="text-stone-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 p-2"><Trash2 size={18} /></button>

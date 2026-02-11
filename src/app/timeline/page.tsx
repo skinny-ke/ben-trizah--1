@@ -1,4 +1,3 @@
-"use strict";
 "use client";
 
 import { useState, useEffect } from "react";
@@ -13,6 +12,7 @@ interface Milestone {
   date: string;
   title: string;
   description: string;
+  user_id?: string | null;
 }
 
 export default function TimelinePage() {
@@ -57,7 +57,16 @@ export default function TimelinePage() {
         .order("date", { ascending: true });
 
       if (error) throw error;
-      setMilestones(data || []);
+      
+      const formattedData: Milestone[] = (data || []).map((m: any) => ({
+        id: m.id,
+        date: m.date || new Date().toISOString(),
+        title: m.title || "Untitled Event",
+        description: m.description || "",
+        user_id: m.user_id
+      }));
+      
+      setMilestones(formattedData);
     } catch (error: any) {
       toast.error("Connecting to our journey...");
       setMilestones([
@@ -85,7 +94,16 @@ export default function TimelinePage() {
         .single();
 
       if (error) throw error;
-      setMilestones(prev => [...prev, data].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
+      
+      const formattedMilestone: Milestone = {
+        id: data.id,
+        date: data.date,
+        title: data.title,
+        description: data.description || "",
+        user_id: data.user_id
+      };
+
+      setMilestones(prev => [...prev, formattedMilestone].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
       setNewMilestone({ title: "", date: "", description: "" });
       setIsAdding(false);
       toast.success("New milestone added! 🎉");

@@ -34,7 +34,7 @@ export default function Landing() {
 
         <h1 className="text-4xl md:text-6xl font-bold text-stone-800 mb-4 tracking-tight">
           Welcome to Our <br />
-          <span className="text-rose-400">Little World</span> 💘
+          <span className="text-rose-400">Little World</span> 💖
         </h1>
         
         <p className="text-stone-500 text-lg md:text-xl mb-12 max-w-md mx-auto">

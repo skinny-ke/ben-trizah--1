@@ -1,4 +1,3 @@
-"use strict";
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -6,13 +5,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { PageHeader, LoadingSpinner, EmptyState, Card } from "@/components/ui/shared";
 import { toast } from "sonner";
-import { Camera, Plus, Trash2, Sparkles, X, Image as ImageIcon, Loader2, Wand2 } from "lucide-react";
+import { Camera, Plus, Trash2, X, Image as ImageIcon, Loader2, Wand2 } from "lucide-react";
 
 interface Memory {
   id: string;
   image_url: string;
   caption: string;
   created_at: string;
+  user_id?: string | null;
 }
 
 const AI_CAPTIONS = [
@@ -47,10 +47,19 @@ export default function GalleryPage() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setMemories(data || []);
+      
+      // Map to ensure types match
+      const formattedData: Memory[] = (data || []).map((m: any) => ({
+        id: m.id,
+        image_url: m.image_url,
+        caption: m.caption || "",
+        created_at: m.created_at || new Date().toISOString(),
+        user_id: m.user_id
+      }));
+      
+      setMemories(formattedData);
     } catch (error: any) {
       toast.error("Connecting to gallery...");
-      // Seed data with generated images
       setMemories([
         { 
           id: '1', 
@@ -129,7 +138,15 @@ export default function GalleryPage() {
 
       if (dbError) throw dbError;
 
-      setMemories([data, ...memories]);
+      const newMemory: Memory = {
+        id: data.id,
+        image_url: data.image_url,
+        caption: data.caption || "",
+        created_at: data.created_at || new Date().toISOString(),
+        user_id: data.user_id
+      };
+
+      setMemories([newMemory, ...memories]);
       setIsAdding(false);
       setPreview(null);
       setCaption("");

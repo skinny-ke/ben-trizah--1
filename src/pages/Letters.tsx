@@ -8,6 +8,8 @@ interface Letter {
   id: string;
   title: string;
   content: string;
+  user_id?: string | null;
+  created_at?: string | null;
 }
 
 const SAMPLE_LETTERS = [
@@ -49,7 +51,16 @@ export default function Letters() {
     try {
       const { data, error } = await supabase.from('letters').select('*');
       if (error) throw error;
-      setLetters(data?.length ? data : SAMPLE_LETTERS);
+      
+      const formattedData: Letter[] = (data || []).map((l: any) => ({
+        id: l.id,
+        title: l.title || "Untitled Letter",
+        content: l.content || "",
+        user_id: l.user_id,
+        created_at: l.created_at
+      }));
+
+      setLetters(formattedData.length ? formattedData : SAMPLE_LETTERS);
     } catch (error) {
       setLetters(SAMPLE_LETTERS);
     }

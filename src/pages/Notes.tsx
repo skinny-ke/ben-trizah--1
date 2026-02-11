@@ -9,6 +9,7 @@ interface Note {
   id: string;
   content: string;
   created_at: string;
+  user_id?: string | null;
 }
 
 const SAMPLE_NOTES = [
@@ -34,7 +35,15 @@ export default function Notes() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setNotes(data?.length ? data : SAMPLE_NOTES);
+      
+      const formattedData: Note[] = (data || []).map((n: any) => ({
+        id: n.id,
+        content: n.content || "",
+        created_at: n.created_at || new Date().toISOString(),
+        user_id: n.user_id
+      }));
+
+      setNotes(formattedData.length ? formattedData : SAMPLE_NOTES);
     } catch (error) {
       setNotes(SAMPLE_NOTES);
     } finally {
@@ -53,7 +62,15 @@ export default function Notes() {
         .select();
 
       if (error) throw error;
-      setNotes([data[0], ...notes]);
+      
+      const formattedNote: Note = {
+        id: data[0].id,
+        content: data[0].content || "",
+        created_at: data[0].created_at || new Date().toISOString(),
+        user_id: data[0].user_id
+      };
+
+      setNotes([formattedNote, ...notes]);
       setNewNote('');
       toast.success('Note added to our vault ✨');
     } catch (error) {

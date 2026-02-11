@@ -5,6 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 import { X, Heart } from "lucide-react";
+import { Button } from "./button";
+import { Input } from "./input";
+
+export { Button, Input };
 
 export const Card = ({ children, className, delay = 0 }: { children: ReactNode; className?: string; delay?: number }) => (
   <motion.div

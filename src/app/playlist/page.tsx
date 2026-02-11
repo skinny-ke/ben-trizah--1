@@ -1,4 +1,3 @@
-"use strict";
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,13 +5,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { PageHeader, LoadingSpinner, EmptyState, Card } from "@/components/ui/shared";
 import { toast } from "sonner";
-import { Music, Plus, Trash2, ExternalLink, Play, X, Heart, Disc } from "lucide-react";
+import { Music, Plus, Trash2, Play, X, Disc } from "lucide-react";
 
 interface Song {
   id: string;
   song_title: string;
   link: string;
   created_at: string;
+  user_id?: string | null;
 }
 
 export default function PlaylistPage() {
@@ -33,7 +33,16 @@ export default function PlaylistPage() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setSongs(data || []);
+      
+      const formattedData: Song[] = (data || []).map((s: any) => ({
+        id: s.id,
+        song_title: s.song_title || "Untitled",
+        link: s.link || "",
+        created_at: s.created_at || new Date().toISOString(),
+        user_id: s.user_id
+      }));
+      
+      setSongs(formattedData);
     } catch (error: any) {
       toast.error("Tuning our instruments...");
       setSongs([
@@ -78,7 +87,16 @@ export default function PlaylistPage() {
         .single();
 
       if (error) throw error;
-      setSongs([data, ...songs]);
+      
+      const formattedSong: Song = {
+        id: data.id,
+        song_title: data.song_title || "Untitled",
+        link: data.link || "",
+        created_at: data.created_at || new Date().toISOString(),
+        user_id: data.user_id
+      };
+
+      setSongs([formattedSong, ...songs]);
       setNewSong({ title: "", link: "" });
       setIsAdding(false);
       toast.success("Song added to our soundtrack! 🎵");
@@ -236,7 +254,7 @@ export default function PlaylistPage() {
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ repeat: Infinity, duration: 2 }}
         >
-          <Heart className="w-16 h-16 text-pink-50/50 mx-auto fill-pink-50/50" />
+          <Music className="w-16 h-16 text-pink-50/50 mx-auto fill-pink-50/50" />
         </motion.div>
         <p className="text-pink-200 font-medium italic mt-6 text-xl">
           Music is what feelings sound like.

@@ -10,6 +10,8 @@ interface Milestone {
   date: string;
   title: string;
   description: string;
+  user_id?: string | null;
+  created_at?: string | null;
 }
 
 const SAMPLE_MILESTONES = [
@@ -41,7 +43,17 @@ export default function Timeline() {
         .order('date', { ascending: false });
 
       if (error) throw error;
-      setMilestones(data?.length ? data : SAMPLE_MILESTONES);
+      
+      const formattedData: Milestone[] = (data || []).map((m: any) => ({
+        id: m.id,
+        date: m.date || new Date().toISOString(),
+        title: m.title || "Untitled Event",
+        description: m.description || "",
+        user_id: m.user_id,
+        created_at: m.created_at
+      }));
+
+      setMilestones(formattedData.length ? formattedData : SAMPLE_MILESTONES);
     } catch (error) {
       setMilestones(SAMPLE_MILESTONES);
     }
@@ -69,7 +81,15 @@ export default function Timeline() {
 
       if (error) throw error;
       if (data) {
-        setMilestones([data[0], ...milestones].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        const newMilestone: Milestone = {
+          id: data[0].id,
+          date: data[0].date,
+          title: data[0].title,
+          description: data[0].description || "",
+          user_id: data[0].user_id,
+          created_at: data[0].created_at
+        };
+        setMilestones([newMilestone, ...milestones].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
       }
       setIsModalOpen(false);
       setTitle(''); setDate(''); setDescription('');

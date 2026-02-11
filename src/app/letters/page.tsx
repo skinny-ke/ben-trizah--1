@@ -1,4 +1,3 @@
-"use strict";
 "use client";
 
 import { useState, useEffect } from "react";
@@ -13,6 +12,7 @@ interface Letter {
   title: string;
   content: string;
   created_at: string;
+  user_id?: string | null;
 }
 
 export default function LettersPage() {
@@ -34,7 +34,16 @@ export default function LettersPage() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setLetters(data || []);
+      
+      const formattedData: Letter[] = (data || []).map((l: any) => ({
+        id: l.id,
+        title: l.title || "Untitled Letter",
+        content: l.content || "",
+        created_at: l.created_at || new Date().toISOString(),
+        user_id: l.user_id
+      }));
+      
+      setLetters(formattedData);
     } catch (error: any) {
       toast.error("Preparing your letters...");
       setLetters([
@@ -79,7 +88,16 @@ Love, Ben`,
         .single();
 
       if (error) throw error;
-      setLetters([data, ...letters]);
+      
+      const formattedLetter: Letter = {
+        id: data.id,
+        title: data.title || "Untitled Letter",
+        content: data.content || "",
+        created_at: data.created_at || new Date().toISOString(),
+        user_id: data.user_id
+      };
+
+      setLetters([formattedLetter, ...letters]);
       setNewLetter({ title: "", content: "" });
       setIsAdding(false);
       toast.success("Letter sealed with a kiss! 💌");

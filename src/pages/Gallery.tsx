@@ -3,13 +3,14 @@ import { supabase } from '@/lib/supabase';
 import { Button, Card, Modal } from '@/components/ui/shared';
 import { Image as ImageIcon, Plus, Upload, Heart } from 'lucide-react';
 import { toast } from 'sonner';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 interface Memory {
   id: string;
   image_url: string;
   caption: string;
   created_at: string;
+  user_id?: string | null;
 }
 
 const SAMPLE_MEMORIES = [
@@ -41,7 +42,16 @@ export default function Gallery() {
     try {
       const { data, error } = await supabase.from('memories').select('*').order('created_at', { ascending: false });
       if (error) throw error;
-      setMemories(data?.length ? data : SAMPLE_MEMORIES);
+      
+      const formattedData: Memory[] = (data || []).map((m: any) => ({
+        id: m.id,
+        image_url: m.image_url,
+        caption: m.caption || "",
+        created_at: m.created_at || new Date().toISOString(),
+        user_id: m.user_id
+      }));
+
+      setMemories(formattedData.length ? formattedData : SAMPLE_MEMORIES);
     } catch (error) {
       setMemories(SAMPLE_MEMORIES);
     }
@@ -62,7 +72,16 @@ export default function Gallery() {
     try {
       const { data, error } = await supabase.from('memories').insert([{ image_url: imagePreview, caption }]).select();
       if (error) throw error;
-      setMemories([data[0], ...memories]);
+      
+      const newMemory: Memory = {
+        id: data[0].id,
+        image_url: data[0].image_url,
+        caption: data[0].caption || "",
+        created_at: data[0].created_at || new Date().toISOString(),
+        user_id: data[0].user_id
+      };
+
+      setMemories([newMemory, ...memories]);
       setIsModalOpen(false);
       setCaption(''); setImagePreview(null);
       toast.success('Memory captured forever! 📸');
